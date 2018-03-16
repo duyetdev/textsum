@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TextSum</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+
+<body>
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+        <h5 class="my-0 mr-md-auto font-weight-normal">TextSum</h5>
+        <nav class="my-2 my-md-0 mr-md-3">
+        </nav>
+    </div>
+    <div class="container">
+        <form>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Input text</label>
+                        <textarea class="form-control" id="input" rows="5">Automatic summarization is the process of shortening a text document with software, in order to create a summary with the major points of the original document. Technologies that can make a coherent summary take into account variables such as length, writing style and syntax. Automatic data summarization is part of machine learning and data mining. The main idea of summarization is to find a subset of data which contains the "information" of the entire set. Such techniques are widely used in industry today. Search engines are an example; others include summarization of documents, image collections and videos. Document summarization tries to create a representative summary or abstract of the entire document, by finding the most informative sentences, while in image summarization the system finds the most representative and important (i.e. salient) images. For surveillance videos, one might want to extract the important events from the uneventful context. There are two general approaches to automatic summarization: extraction and abstraction. Extractive methods work by selecting a subset of existing words, phrases, or sentences in the original text to form the summary. In contrast, abstractive methods build an internal semantic representation and then use natural language generation techniques to create a summary that is closer to what a human might express. Such a summary might include verbal innovations. Research to date has focused primarily on extractive methods, which are appropriate for image collection summarization and video summarization.</textarea>
+                    </div>
+                </div>
+                <div class="col-12 text-center">
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Phrase limit</label>
+                        <input type="number" name="phrase_limit" class="form-control" value="100" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Word limit</label>
+                        <input type="number" name="word_limit" class="form-control" value="150" min="1">
+                    </div>
+                </div>
+                <div class="col-12 text-center">
+                    <div class="form-group">
+                        <button class="btn btn-primary">Summarize now</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="text-center" id="loading">Loading ...</div>
+                </div>
+            </div>
+            <div class="row" style="display: none" id="result_area">
+                <div style="width: 100%"><strong>Result:</strong>
+                    <div class="message"></div>
+                </div>
+                <div style="width: 100%"><strong>Keywords:</strong>
+                    <div class="keywords"></div>
+                </div>
+            </div>
+        </form>
+        <footer>
+            <hr> (c) ex-JVN :)
+        </footer>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#loading').hide();
+        $('#result_area').hide();
+
+        $('form').submit(function(e) {
+            e.preventDefault();
+
+            var text = $('#input').val();
+            if (!text) return alert("Please input your text!");
+
+            var phrase_limit = $("[name='phrase_limit']").val();
+            var word_limit = $("[name='word_limit']").val();
+
+            $('#result_area').hide();
+            $('#loading').show();
+
+            $.ajax({
+                url: '/api/textsum',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                method: 'POST',
+                data: JSON.stringify({ text: text, phrase_limit: phrase_limit, word_limit: word_limit }),
+                success: function(data) {
+                    console.log(data)
+                    $('#loading').hide();
+                    $('#result_area div.message').html(data.message);
+                    $('#result_area div.keywords').html(data.keywords);
+                    $('#result_area').show();
+                },
+                error: function() {
+                    $('#loading').hide();
+                    $('#result_area div.message').text('Something went wrong!');
+                    $('#result_area').show();
+                },
+            });
+
+        });
+    })
+    </script>
+</body>
+
+</html>

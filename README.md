@@ -4,6 +4,8 @@ ex-JVN team
 
 # Usage
 
+Please using `Python 3`
+
 ```python
 from summarize import summarize
 
@@ -28,3 +30,7 @@ Start the server
 python app.py
 
 ```
+
+--------
+
+![screenshot.png](screenshot.png)
